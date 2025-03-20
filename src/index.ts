@@ -85,12 +85,12 @@ async function getSolanaPrice() {
 
     const response = await fetch(solanaPriceEndpoint);
     const data = await response.json();
-    
+
     cachedPrice = {
       value: data.solana.usd,
       timestamp: Date.now()
     };
-    
+
     return cachedPrice.value;
   } catch (error) {
     throw new Error("Failed to get Solana price");
@@ -98,18 +98,22 @@ async function getSolanaPrice() {
 }
 
 async function getSourceAccountSigner() {
-  const SOURCE_ACCOUNT_SIGNER = await createKeyPairSignerFromBytes(
-    new Uint8Array(await loadKeypairFromJson())
-  )
-  return SOURCE_ACCOUNT_SIGNER;
+  try {
+    const SOURCE_ACCOUNT_SIGNER = await createKeyPairSignerFromBytes(
+      new Uint8Array(await loadKeypairFromJson())
+    )
+    return SOURCE_ACCOUNT_SIGNER;
+  } catch (error:any) {
+    throw new Error(error?.message);
+  }
 }
 
 async function getLatestBlockHash() {
   try {
     const { value: blockHash } = await solanaRpc.getLatestBlockhash().send();
     return blockHash;
-  } catch (error) {
-    throw new Error("Failed to get latest block hash");
+  } catch (error:any) {
+    throw new Error(error?.message);
   }
 }
 
@@ -120,35 +124,39 @@ async function constructTransactionMessage(
   to: string,
   amount: number
 ) {
-  const blockHash = await getLatestBlockHash();
-  const lamportsAmount = solToLamports(amount);
-  const transactionMessage = pipe(
-    createTransactionMessage({ version: 0 }),
-    (tx: any) => (
-      setTransactionMessageFeePayer(sourceAccountSigner.address, tx)
-    ),
-    (tx: any) => (
-      setTransactionMessageLifetimeUsingBlockhash(blockHash, tx)
-    ),
-    (tx: any) => (
-      appendTransactionMessageInstruction(
-        getTransferSolInstruction({
-          amount: lamportsAmount,
-          source: sourceAccountSigner,
-          destination: address(to),
-        })
-        , tx)
+  try {
+    const blockHash = await getLatestBlockHash();
+    const lamportsAmount = solToLamports(amount);
+    const transactionMessage = pipe(
+      createTransactionMessage({ version: 0 }),
+      (tx: any) => (
+        setTransactionMessageFeePayer(sourceAccountSigner.address, tx)
+      ),
+      (tx: any) => (
+        setTransactionMessageLifetimeUsingBlockhash(blockHash, tx)
+      ),
+      (tx: any) => (
+        appendTransactionMessageInstruction(
+          getTransferSolInstruction({
+            amount: lamportsAmount,
+            source: sourceAccountSigner,
+            destination: address(to),
+          })
+          , tx)
+      )
     )
-  )
-  return transactionMessage;
+    return transactionMessage;
+  } catch (error:any) {
+    throw new Error(error?.message);
+  }
 }
 
 async function signTransactionMessage(transactionMessage: any) {
   try {
     const signedTransaction = await signTransactionMessageWithSigners(transactionMessage);
     return signedTransaction;
-  } catch (error) {
-    throw new Error("Failed to sign transaction message");
+  } catch (error:any) {
+    throw new Error(error?.message);
   }
 }
 
@@ -156,12 +164,12 @@ async function sendTransaction(signedTransaction: any) {
   try {
     const transactionSignature = await sendAndConfirmTransaction(signedTransaction, { commitment: 'confirmed' });
     return transactionSignature;
-  } catch (e) {
+  } catch (e:any) {
     if (isSolanaError(e, SOLANA_ERROR__JSON_RPC__SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE)) {
       const preflightErrorContext = e.context;
       console.log(preflightErrorContext);
     } else {
-      throw e;
+      throw e?.message;
     }
   }
 
@@ -180,13 +188,17 @@ async function transferTool(args: { to: string, amount: number }) {
     }).send();
     return transaction;
   } catch (error: any) {
-    return error?.message;
+    throw new Error(error?.message);
   }
 }
 
 async function getSlotTool() {
-  const slot = await solanaRpc.getSlot().send();
-  return slot;
+  try {
+    const slot = await solanaRpc.getSlot().send();
+    return slot;
+  } catch (error:any) {
+    throw new Error(error?.message);
+  }
 }
 
 async function getAddressBalanceTool(add: string) {
@@ -194,7 +206,7 @@ async function getAddressBalanceTool(add: string) {
     const balance = await solanaRpc.getBalance(address(add)).send();
     return balance.value;
   } catch (error: any) {
-    return error?.message;
+    throw new Error(error?.message);
   }
 }
 
@@ -209,11 +221,18 @@ const server = new McpServer({
 server.tool(
   "get-latest-slot",
   async () => {
-    return {
-      content: [{
-        type: "text",
-        text: String(await getSlotTool())
-      }]
+    try {
+      return {
+        content: [{
+          type: "text",
+          text: String(await getSlotTool())
+        }]
+      }
+    } catch (error:any) {
+      return {
+        content: [{ type: "text", text: error?.message }],
+        isError: true
+      }
     }
   }
 )
@@ -222,12 +241,19 @@ server.tool(
 server.tool(
   "get-wallet-address",
   async () => {
-    let address = (await getSourceAccountSigner()).address as string
-    return {
-      content: [{
-        type: "text",
-        text: address
-      }]
+    try {
+      let address = (await getSourceAccountSigner()).address as string
+      return {
+        content: [{
+          type: "text",
+          text: address
+        }]
+      }
+    } catch (error:any) {
+      return {
+        content: [{ type: "text", text: `${error?.message}}` }],
+        isError: true
+      }
     }
   }
 )
@@ -235,20 +261,27 @@ server.tool(
 server.tool(
   "get-wallet-balance",
   async () => {
-    let address = (await getSourceAccountSigner()).address as string
-    const lamportsBalance = await getAddressBalanceTool(address)
-    const solBalance = lamportsToSol(Number(lamportsBalance))
-    const price = await getSolanaPrice()
-    const usdBalance = (solBalance * price).toFixed(4)
-    return {
-      content: [{
-        type: "text",
-        text: JSON.stringify({
-          lamportsBalance: lamportsBalance,
-          solanaBalnce: solBalance,
-          usdBalance: usdBalance
-        }, bigIntReplacer, 2)
-      }]
+    try {
+      let address = (await getSourceAccountSigner()).address as string
+      const lamportsBalance = await getAddressBalanceTool(address)
+      const solBalance = lamportsToSol(Number(lamportsBalance))
+      const price = await getSolanaPrice()
+      const usdBalance = (solBalance * price).toFixed(4)
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            lamportsBalance: lamportsBalance,
+            solanaBalnce: solBalance,
+            usdBalance: usdBalance
+          }, bigIntReplacer, 2)
+        }]
+      }
+    } catch (error:any) {
+      return {
+        content: [{ type: "text", text: error?.message }],
+        isError: true
+      }
     }
   }
 )
@@ -259,9 +292,16 @@ server.tool("transfer",
     amount: z.number().describe("Amount in SOL")
   },
   async (args) => {
-    const transaction = await transferTool(args);
-    return {
-      content: [{ type: "text", text: JSON.stringify(transaction, bigIntReplacer, 2) }]
+    try {
+      const transaction = await transferTool(args);
+      return {
+        content: [{ type: "text", text: JSON.stringify(transaction, bigIntReplacer, 2) }]
+      }
+    } catch (error:any) {
+      return {
+        content: [{ type: "text", text: error?.message }],
+        isError: true
+      }
     }
   }
 );
@@ -272,7 +312,6 @@ const transport = new StdioServerTransport();
 async function main() {
   await verifyKeypairFile();
   await server.connect(transport);
-  console.log("Server connected");
 }
 
 main().catch(console.error);
