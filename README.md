@@ -51,23 +51,23 @@ To integrate with Cursor, follow these steps:
 Example command: ```/Users/username/projects/solana-mcp/run.sh /Users/username/Documents/keypair.json```
 
 
-## 🛠️Available Tools
+## 🛠️ Available Tools
 
-### get-latest-slot
+### 1. get-latest-slot
 Returns the latest slot number:
 
 ```bash
 368202671
 ```
 
-### get-wallet-address
+### 2. get-wallet-address
 Returns the wallet address:
 
 ```bash
 5GTuMBag1M8tfe736kcV1vcAE734Zf1SRta8pmWf82TJ
 ```
 
-### get-wallet-balance
+### 3. get-wallet-balance
 Returns the wallet balance in SOL, Lamports, and USD:
 
 ```bash
@@ -78,7 +78,7 @@ Returns the wallet balance in SOL, Lamports, and USD:
 }
 ```
 
-### transfer
+### 4. transfer
 Transfers SOL to a recipient address:
 
 ```bash
