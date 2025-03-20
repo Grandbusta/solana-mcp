@@ -36,6 +36,7 @@ npm run build
 4. Create a keypair file
 Create a file named `keypair.json` anywhere you want and copy your private key into it. Check the example-keypair.json file for an example.
 
+NB: RPC endpoint is set to `api.devnet.solana.com` by default. If you want to use a different endpoint, you can set it in the `run.sh` file.
 
 ## Integration with Cursor
 
