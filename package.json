@@ -1,0 +1,27 @@
+{
+  "name": "solana-mcp",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build:start": "npm run build && npm start",
+    "start": "node dist/index.js",
+    "build": "tsc && shx chmod +x dist/index.js",
+    "dev": "tsc --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^20.8.7",
+    "shx": "^0.3.4",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "@solana-program/system": "^0.7.0",
+    "@solana/kit": "^2.1.0",
+    "zod": "^3.24.2"
+  }
+}
