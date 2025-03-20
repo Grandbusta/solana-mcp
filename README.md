@@ -1,4 +1,4 @@
-# Solana MCP Server
+# Solana MCP Server 🌱
 
 A MCP server to interact with the Solana blockchain with your own private key.
 
@@ -9,18 +9,18 @@ A MCP server to interact with the Solana blockchain with your own private key.
 - [🛠️Available Tools](#️available-tools)
 - [🔖License](#️license)
 
-## ✨Features
+## ✨ Features
 
 - Get latest slot
 - Get wallet address
 - Get wallet balance
 - Transfer SOL
 
-## ⚙️Setup
+## ⚙️ Setup
 
 1. Clone the repository
 ```bash
-git clone URL_ADDRESS
+git clone https://github.com/Grandbusta/solana-mcp.git
 ```
 
 2. Install dependencies
@@ -149,6 +149,10 @@ Transfers SOL to a recipient address:
 }
 ```
 
+
+## 🧑‍💻 Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
 
 ## 🔖License
 
