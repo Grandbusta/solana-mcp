@@ -6,8 +6,8 @@ A MCP server to interact with the Solana blockchain with your own private key.
 - [✨Features](#-features)
 - [⚙️Setup](#️-setup)
 - [Integration with Cursor](#integration-with-cursor)
-- [🛠️Available Tools](#️available-tools)
-- [🔖License](#️license)
+- [🛠️Available Tools](#️-available-tools)
+- [🔖License](#️-license)
 
 ## ✨ Features
 
