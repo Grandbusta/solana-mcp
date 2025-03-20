@@ -155,6 +155,6 @@ Transfers SOL to a recipient address:
 
 Contributions are welcome! Please open an issue or submit a pull request.
 
-## 🔖License
+## 🔖 License
 
 [WTFPL License](https://www.wtfpl.net/about/)
