@@ -1,5 +1,7 @@
 # Solana MCP Server 🌱
 
+[![smithery badge](https://smithery.ai/badge/@Grandbusta/solana-mcp)](https://smithery.ai/server/@Grandbusta/solana-mcp)
+
 A MCP server to interact with the Solana blockchain with your own private key.
 
 ## 📖 Table of Contents
@@ -17,6 +19,16 @@ A MCP server to interact with the Solana blockchain with your own private key.
 - Transfer SOL
 
 ## ⚙️ Setup
+
+### Installing via Smithery
+
+To install Solana MCP for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@Grandbusta/solana-mcp):
+
+```bash
+npx -y @smithery/cli install @Grandbusta/solana-mcp --client claude
+```
+
+### Manual Setup
 
 1. Clone the repository
 ```bash
