@@ -1,0 +1,23 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - keypairPath
+    properties:
+      keypairPath:
+        type: string
+        description: Absolute or relative path to your keypair JSON file
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({
+      command: 'sh',
+      args: ['./run.sh', config.keypairPath],
+      env: { RPC_URL: process.env.RPC_URL || 'api.devnet.solana.com' }
+    })
+  exampleConfig:
+    keypairPath: ./example-keypair.json
